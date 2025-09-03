@@ -1,0 +1,19 @@
+{
+  "name": "dsa-based-search-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "natural": "^8.1.0",
+    "puppeteer": "^24.17.0",
+    "stopword": "^3.1.5"
+  }
+}

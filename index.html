@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+    <title>DSA Based Search Engine</title>
+
+<body>
+    <div class="container">
+        <div class="hero-content">
+            <h1>Search 3500+ DSA Problems in Seconds</h1>
+            <p class="tagline">
+                Instantly find coding challanges across
+                <img src="assets/logos/codeforces.png" alt="codeforces" class="icon" />
+                <img src="assets/logos/codechef.png" alt="codechef" class="icon" />
+                <img src="assets/logos/leetcode.png" alt="leetcode" class="icon" />
+                - all in one place
+            </p>
+        </div>
+
+        <div class="search-container">
+            <form id="search-form">
+                <input class="query-input" type="text" id="search-input"
+                    placeholder="Search for problems,topics, or tags..." required />
+                <button type="submit">Search</button>
+            </form>
+
+            <p class="cta">Type a topic, tag, or title above to begin your search.</p>
+            <div id="spinner" class="spinner hidden" aria-hidden="true"></div>
+
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</head>
+
+</html>
