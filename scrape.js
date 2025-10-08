@@ -184,3 +184,167 @@ async function scrapeCodeforces() {
 }
 
 //scrapeCodeforces();
+
+async function scrapeCSES() {
+    const browser = await puppeteer.launch({
+        headless: false,
+        defaultViewport: null,
+        args: ["--disable-blink-features=AutomationControlled"],
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+        "AppleWebKit/537.36 (KHTML, like Gecko) " +
+        "Chrome/114.0.0.0 Safari/537.36"
+    );
+
+    await page.goto("https://cses.fi/problemset/", {
+        waitUntil: "domcontentloaded"
+    });
+
+    const problemLinks = await page.evaluate(() => {
+        const links = Array.from(document.querySelectorAll("ul.task-list li a"));
+        return links.map(link => ({
+            title: link.textContent.trim(),
+            url: link.href
+        }));
+    });
+
+    console.log(`Collected ${problemLinks.length} CSES problems`);
+
+    let csesProblemsWithDescription = [];
+
+    for (let { title, url } of problemLinks) {
+        const problemPage = await browser.newPage();
+        try {
+            await problemPage.goto(url, {
+                waitUntil: "domcontentloaded"
+            });
+
+            const description = await problemPage.evaluate(() => {
+                const descContainer = document.querySelector(".content");
+                if (!descContainer) return "No description";
+
+                const paragraphs = Array.from(descContainer.querySelectorAll("p"));
+                return paragraphs
+                    .map(p => p.textContent.trim())
+                    .filter(text => text.length > 0)
+                    .join(" ");
+            });
+
+            csesProblemsWithDescription.push({ title, url, description });
+            console.log(`Scraped: ${title}`);
+        }
+        catch (error) {
+            console.log(`Error scraping ${title}:`, error.message);
+        }
+        finally {
+            await problemPage.close();
+        }
+    }
+
+    await fsPromises.mkdir("./problems", { recursive: true });
+    await fsPromises.writeFile(
+        "./problems/cses_problems.json",
+        JSON.stringify(csesProblemsWithDescription, null, 2)
+    );
+
+    await browser.close();
+    console.log(`Saved ${csesProblemsWithDescription.length} CSES problems`);
+}
+
+//scrapeCSES();
+
+async function scrapeInterviewBit() {
+    const browser = await puppeteer.launch({
+        headless: false,
+        defaultViewport: null,
+        args: ["--disable-blink-features=AutomationControlled"],
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+        "AppleWebKit/537.36 (KHTML, like Gecko) " +
+        "Chrome/114.0.0.0 Safari/537.36"
+    );
+
+    // Navigate to practice page
+    await page.goto("https://www.interviewbit.com/practice/", {
+        waitUntil: "domcontentloaded"
+    });
+
+    // Wait for problem sections to load
+    await page.waitForSelector(".topic-card", { timeout: 10000 });
+
+    // Collect all problem links from all topics
+    const problemLinks = await page.evaluate(() => {
+        const problems = [];
+        const topicCards = document.querySelectorAll(".topic-card");
+
+        topicCards.forEach(card => {
+            const problemElements = card.querySelectorAll(".problems-list a");
+            problemElements.forEach(link => {
+                const title = link.querySelector(".title")?.textContent.trim();
+                const href = link.href;
+                if (title && href) {
+                    problems.push({ title, url: href });
+                }
+            });
+        });
+
+        return problems;
+    });
+
+    console.log(`Collected ${problemLinks.length} InterviewBit problems`);
+
+    let interviewBitProblemsWithDescription = [];
+
+    for (let { title, url } of problemLinks) {
+        const problemPage = await browser.newPage();
+        try {
+            await problemPage.goto(url, {
+                waitUntil: "domcontentloaded",
+                timeout: 15000
+            });
+
+            // Wait for problem content to load
+            await problemPage.waitForSelector(".problem-statement", { timeout: 10000 });
+
+            const description = await problemPage.evaluate(() => {
+                const problemStatement = document.querySelector(".problem-statement");
+                if (!problemStatement) return "No description";
+
+                // Get all text content from problem statement
+                const textContent = problemStatement.innerText.trim();
+                return textContent;
+            });
+
+            interviewBitProblemsWithDescription.push({
+                title,
+                url,
+                description: description || "No description"
+            });
+
+            console.log(`Scraped: ${title}`);
+        }
+        catch (error) {
+            console.log(`Error scraping ${title}:`, error.message);
+        }
+        finally {
+            await problemPage.close();
+        }
+    }
+
+    await fsPromises.mkdir("./problems", { recursive: true });
+    await fsPromises.writeFile(
+        "./problems/interviewbit_problems.json",
+        JSON.stringify(interviewBitProblemsWithDescription, null, 2)
+    );
+
+    await browser.close();
+    console.log(`Saved ${interviewBitProblemsWithDescription.length} InterviewBit problems`);
+}
+
+scrapeInterviewBit();
