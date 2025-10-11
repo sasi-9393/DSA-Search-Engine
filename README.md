@@ -159,8 +159,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/sasi-9393)
-- LinkedIn: [Your Name](https://www.linkedin.com/in/mvsasikumar/)
+- GitHub: [sasi-9393](https://github.com/sasi-9393)
+- LinkedIn: [Sasi kumar](https://www.linkedin.com/in/mvsasikumar/)
 
 
 ## 🙏 Acknowledgments
